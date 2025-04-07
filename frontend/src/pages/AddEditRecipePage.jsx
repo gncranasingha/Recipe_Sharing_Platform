@@ -72,7 +72,7 @@ const AddEditRecipePage = () => {
       });
     }
   }, [dispatch, id, isEditMode, isAuthenticated, navigate, reset, user]);
-  // Set form values when currentRecipe changes (edit mode)
+  // Set form values when currentRecipe
   useEffect(() => {
     if (isEditMode && currentRecipe) {
       if (currentRecipe.userId !== user?.id) {
@@ -103,7 +103,7 @@ const AddEditRecipePage = () => {
   }, [currentRecipe, isEditMode, reset, user, navigate]);
 
   const onSubmit = (data) => {
-    // Format ingredients and instructions as arrays
+    //  ingredients and instructions as arrays
     const recipeData = {
       title: data.title,
       cookingTime: parseInt(data.cookingTime, 10),

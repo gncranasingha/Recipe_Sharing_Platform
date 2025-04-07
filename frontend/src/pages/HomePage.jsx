@@ -14,7 +14,7 @@ const HomePage = () => {
   }, [dispatch]);
 
   return (
-    <Container className="py-8">
+    <Container className="py-8" >
       <Typography variant="h4" component="h1" gutterBottom className="text-center">
         Discover Recipes
       </Typography>
