@@ -10,10 +10,10 @@ const RecipeCard = ({ recipe }) => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const { favorites } = useSelector((state) => state.favorites);
   
-  const isFavorite = favorites.some((fav) => fav.recipeId === recipe.id);
+  const isFavorite = favorites.includes(recipe.id);
 
   const handleFavoriteClick = () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || !user) return;
     
     if (isFavorite) {
       dispatch(removeFavorite({ userId: user.id, recipeId: recipe.id }));

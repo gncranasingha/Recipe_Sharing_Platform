@@ -6,7 +6,7 @@ export const fetchFavorites = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       const response = await api.get(`/auth/${userId}`);
-      return response.data;
+      return response.data.favorites || []; // Return favorites array or empty array if none
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -17,8 +17,27 @@ export const addFavorite = createAsyncThunk(
   'favorites/addFavorite',
   async ({ userId, recipeId }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/auth/${userId}`, { recipeId });
-      return response.data;
+      // First get current user data
+      const { data: user } = await api.get(`/auth/${userId}`);
+      
+      // Create new favorites array if it doesn't exist
+      const currentFavorites = user.favorites || [];
+      
+      // Check if already favorited
+      if (currentFavorites.includes(recipeId)) {
+        return currentFavorites;
+      }
+      
+      // Add the new favorite
+      const updatedFavorites = [...currentFavorites, recipeId];
+      
+      // Update user with new favorites
+      const response = await api.put(`/auth/${userId}`, {
+        ...user,
+        favorites: updatedFavorites
+      });
+      
+      return updatedFavorites;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -29,8 +48,22 @@ export const removeFavorite = createAsyncThunk(
   'favorites/removeFavorite',
   async ({ userId, recipeId }, { rejectWithValue }) => {
     try {
-      await api.delete(`/auth/${userId}`);
-      return recipeId;
+      // First get current user data
+      const { data: user } = await api.get(`/auth/${userId}`);
+      
+      // Create new favorites array if it doesn't exist
+      const currentFavorites = user.favorites || [];
+      
+      // Remove the favorite
+      const updatedFavorites = currentFavorites.filter(id => id !== recipeId);
+      
+      // Update user with new favorites
+      const response = await api.put(`/auth/${userId}`, {
+        ...user,
+        favorites: updatedFavorites
+      });
+      
+      return updatedFavorites;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
@@ -59,12 +92,10 @@ const favoriteSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(addFavorite.fulfilled, (state, action) => {
-        state.favorites.push(action.payload);
+        state.favorites = action.payload;
       })
       .addCase(removeFavorite.fulfilled, (state, action) => {
-        state.favorites = state.favorites.filter(
-          (fav) => fav.recipeId !== action.payload
-        );
+        state.favorites = action.payload;
       });
   },
 });

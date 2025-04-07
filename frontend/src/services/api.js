@@ -30,6 +30,7 @@ api.interceptors.response.use(
   }
 );
 
+// Update the updateUserFavorites function in api.js
 export const updateUserFavorites = async (userId, favorites) => {
   try {
     // First get the current user data
