@@ -2,75 +2,52 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/authSlice';
-import { AppBar, Toolbar, Typography, Button, IconButton, Avatar, Menu, MenuItem } from '@mui/material';
-import { Search as SearchIcon, Favorite as FavoriteIcon } from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleLogout = () => {
     dispatch(logout());
-    localStorage.removeItem('token');
     navigate('/login');
-    handleMenuClose();
   };
 
   return (
-    <AppBar position="static" className="bg-green-600">
-      <Toolbar className="flex justify-between">
-        <Link to="/" className="flex items-center">
-          <Typography variant="h6" className="font-bold text-white">
-            RecipeShare
-          </Typography>
-        </Link>
-
-        <div className="flex items-center space-x-4">
-          {isAuthenticated ? (
+    <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          Recipe App
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button color="inherit" component={Link} to="/">
+            Home
+          </Button>
+          {isAuthenticated && (
             <>
-              <Button color="inherit" startIcon={<FavoriteIcon />} onClick={() => navigate('/favorites')}>
+              <Button color="inherit" component={Link} to="/favorites">
                 Favorites
               </Button>
-              <Button color="inherit" onClick={() => navigate('/add-recipe')}>
+              <Button color="inherit" component={Link} to="/add-recipe">
                 Add Recipe
               </Button>
-              <IconButton onClick={handleMenuOpen} color="inherit">
-                <Avatar className="w-8 h-8" src={user?.avatar}>
-                  {user?.name?.charAt(0)}
-                </Avatar>
-              </IconButton>
-              <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-              >
-                <MenuItem onClick={() => { navigate('/profile'); handleMenuClose(); }}>
-                  Profile
-                </MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-              </Menu>
+              <Button color="inherit" onClick={handleLogout}>
+                Logout ({user?.name})
+              </Button>
             </>
-          ) : (
+          )}
+          {!isAuthenticated && (
             <>
-              <Button color="inherit" onClick={() => navigate('/login')}>
+              <Button color="inherit" component={Link} to="/login">
                 Login
               </Button>
-              <Button color="inherit" onClick={() => navigate('/register')}>
+              <Button color="inherit" component={Link} to="/register">
                 Register
               </Button>
             </>
           )}
-        </div>
+        </Box>
       </Toolbar>
     </AppBar>
   );

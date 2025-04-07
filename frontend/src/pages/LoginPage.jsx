@@ -14,20 +14,21 @@ const LoginPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      // Mock API call - in a real app, this would be a real API call
+      // In a real app, replace this with actual API call
       const response = await api.post('/auth', data);
       
-      // For MockAPI.io, we'll simulate a response
       const mockResponse = {
         data: {
           id: '1',
           name: data.email.split('@')[0],
           email: data.email,
           token: 'mock-token',
+          favorites: []
         }
       };
       
       localStorage.setItem('token', mockResponse.data.token);
+      localStorage.setItem('user', JSON.stringify(mockResponse.data));
       dispatch(loginSuccess(mockResponse.data));
       navigate('/');
     } catch (err) {

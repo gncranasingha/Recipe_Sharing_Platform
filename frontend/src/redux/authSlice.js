@@ -1,4 +1,29 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import api from '../services/api';
+
+export const checkAuth = createAsyncThunk(
+  'auth/checkAuth',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('user');
+      
+      if (!token || !userData) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        return null;
+      }
+      
+      // Verify token with backend in real app
+      const user = JSON.parse(userData);
+      return user;
+    } catch (error) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      return rejectWithValue('Session expired. Please login again.');
+    }
+  }
+);
 
 const initialState = {
   user: null,
@@ -25,6 +50,8 @@ const authSlice = createSlice({
       state.error = action.payload;
     },
     logout(state) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
       state.user = null;
       state.isAuthenticated = false;
     },
@@ -42,6 +69,23 @@ const authSlice = createSlice({
       state.error = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(checkAuth.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(checkAuth.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.user = action.payload;
+          state.isAuthenticated = true;
+        }
+        state.status = 'succeeded';
+      })
+      .addCase(checkAuth.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      });
+  }
 });
 
 export const {
@@ -55,4 +99,3 @@ export const {
 } = authSlice.actions;
 
 export default authSlice.reducer;
-
