@@ -56,7 +56,7 @@ const Navbar = () => {
     handleMenuClose();
   };
 
-  // Desktop Navigation Items
+  
   const desktopItems = (
     <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
       <Button 
@@ -121,7 +121,7 @@ const Navbar = () => {
     </Box>
   );
 
-  // Mobile Navigation Menu
+  
   const mobileMenu = (
     <>
       <IconButton

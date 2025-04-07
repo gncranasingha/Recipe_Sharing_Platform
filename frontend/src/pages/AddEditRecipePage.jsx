@@ -32,7 +32,7 @@ const AddEditRecipePage = () => {
     }
   });
 
-  // Check authentication and fetch recipe if in edit mode
+  // Check authentication and edit mode
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
