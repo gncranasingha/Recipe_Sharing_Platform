@@ -3,7 +3,29 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRecipeById, deleteRecipe, clearCurrentRecipe } from '../redux/recipeSlice';
 import { addFavorite, removeFavorite } from '../redux/favoriteSlice';
-import { Button, Typography, Card, CardMedia, CardContent, Grid, Divider, List, ListItem, ListItemText, IconButton, CircularProgress, Alert, Box, Container, Rating } from '@mui/material';
+import {
+  Button,
+  Typography,
+  Card,
+  CardMedia,
+  CardContent,
+  Grid,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  IconButton,
+  CircularProgress,
+  Alert,
+  Box,
+  Container,
+  Rating,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions
+} from '@mui/material';
 import { Favorite, FavoriteBorder, Edit, Delete, ArrowBack } from '@mui/icons-material';
 
 const RecipeDetailPage = () => {
@@ -14,9 +36,10 @@ const RecipeDetailPage = () => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const { favorites } = useSelector((state) => state.favorites);
   
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+  
   const isFavorite = favorites.some((fav) => fav.recipeId === id);
-  const isOwner = currentRecipe && user && currentRecipe.userId === user.id;
-
+  
   useEffect(() => {
     dispatch(fetchRecipeById(id));
     
@@ -38,25 +61,41 @@ const RecipeDetailPage = () => {
     }
   };
 
-  const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this recipe?')) {
-      dispatch(deleteRecipe(id)).then(() => {
+  const handleEditClick = () => {
+    navigate(`/recipes/${id}/edit`);
+  };
+
+  const handleDeleteClick = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    setOpenDeleteDialog(false);
+    dispatch(deleteRecipe(id))
+      .unwrap()
+      .then(() => {
         navigate('/');
+      })
+      .catch((error) => {
+        console.error('Failed to delete recipe:', error);
       });
-    }
+  };
+
+  const handleCancelDelete = () => {
+    setOpenDeleteDialog(false);
   };
 
   if (status === 'loading') {
     return (
-      <div className="flex justify-center my-8">
+      <Box display="flex" justifyContent="center" my={8}>
         <CircularProgress />
-      </div>
+      </Box>
     );
   }
 
   if (error) {
     return (
-      <Alert severity="error" className="my-4">
+      <Alert severity="error" sx={{ my: 4 }}>
         {error}
       </Alert>
     );
@@ -64,21 +103,44 @@ const RecipeDetailPage = () => {
 
   if (!currentRecipe) {
     return (
-      <Typography variant="body1" className="text-center my-8">
+      <Typography variant="body1" textAlign="center" my={8}>
         Recipe not found.
       </Typography>
     );
   }
 
   return (
-    <Container className="py-8">
+    <Container sx={{ py: 8 }}>
+      {/* Delete  */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCancelDelete}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Delete Recipe</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete "{currentRecipe.title}"? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelDelete}>Cancel</Button>
+          <Button onClick={handleConfirmDelete} color="error" autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      
       <Button
         startIcon={<ArrowBack />}
         onClick={() => navigate(-1)}
-        className="mb-4"
+        sx={{ mb: 4 }}
       >
         Back
       </Button>
+      
       
       <Card>
         <CardMedia
@@ -89,6 +151,7 @@ const RecipeDetailPage = () => {
         />
         
         <CardContent>
+         
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <Typography variant="h4" component="h1" gutterBottom>
               {currentRecipe.title}
@@ -104,35 +167,41 @@ const RecipeDetailPage = () => {
             </IconButton>
           </Box>
           
+         
           <Box display="flex" alignItems="center" mb={2}>
-            <Typography variant="body1" color="text.secondary" className="mr-4">
+            <Typography variant="body1" color="text.secondary" sx={{ mr: 4 }}>
               Cooking Time: {currentRecipe.cookingTime} mins
             </Typography>
             <Rating value={currentRecipe.rating || 0} precision={0.5} readOnly />
           </Box>
           
-          {isOwner && (
-            <Box mb={2}>
-              <Button
-                variant="outlined"
-                startIcon={<Edit />}
-                onClick={() => navigate(`/recipes/${id}/edit`)}
-                className="mr-2"
-              >
-                Edit
-              </Button>
-              <Button
-                variant="outlined"
-                color="error"
-                startIcon={<Delete />}
-                onClick={handleDelete}
-              >
-                Delete
-              </Button>
-            </Box>
-          )}
+          {/* Edit/Delete Buttons */}
+         
+         
+{isAuthenticated && (
+  <Box mb={2}>
+    <Button
+      variant="contained"
+      startIcon={<Edit />}
+      onClick={handleEditClick}
+      sx={{ mr: 2 }}
+    >
+      Edit Recipe
+    </Button>
+    <Button
+      variant="outlined"
+      color="error"
+      startIcon={<Delete />}
+      onClick={handleDeleteClick}
+    >
+      Delete Recipe
+    </Button>
+  </Box>
+)}
           
-          <Divider className="my-4" />
+          
+          <Divider sx={{ my: 4 }} />
+          
           
           <Grid container spacing={4}>
             <Grid item xs={12} md={6}>

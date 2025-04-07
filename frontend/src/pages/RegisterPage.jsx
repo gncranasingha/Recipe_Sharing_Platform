@@ -14,10 +14,8 @@ const RegisterPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      // Mock API call - in a real app, this would be a real API call
       const response = await api.post('/auth', data);
       
-      // For MockAPI.io, we'll simulate a response
       const mockResponse = {
         data: {
           id: '1',

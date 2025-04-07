@@ -14,7 +14,7 @@ export const checkAuth = createAsyncThunk(
         return null;
       }
       
-      // Verify token with backend in real app
+    
       const user = JSON.parse(userData);
       return user;
     } catch (error) {

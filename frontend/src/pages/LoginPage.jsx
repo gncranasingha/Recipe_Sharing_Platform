@@ -14,8 +14,7 @@ const LoginPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      // In a real app, replace this with actual API call
-      const response = await api.post('/auth', data);
+       const response = await api.post('/auth', data);
       
       const mockResponse = {
         data: {
