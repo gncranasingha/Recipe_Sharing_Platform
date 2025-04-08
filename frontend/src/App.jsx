@@ -17,7 +17,7 @@ function App() {
     <Provider store={store}>
       <Router>
         <AuthInitializer>
-          <div className="min-h-screen bg-gray-50">
+          <div className="min-h-screen ">
             <Navbar />
             <main className="py-4">
               <Routes>

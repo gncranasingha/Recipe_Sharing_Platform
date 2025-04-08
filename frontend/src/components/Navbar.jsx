@@ -27,6 +27,8 @@ import {
   PersonAdd as PersonAddIcon,
   Logout as LogoutIcon
 } from '@mui/icons-material';
+import Brightness4Icon from '@mui/icons-material/Brightness4'; 
+import Brightness7Icon from '@mui/icons-material/Brightness7'; 
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -36,6 +38,16 @@ const Navbar = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+
+  const [isDarkMode, setIsDarkMode] = useState(false)
+
+
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    document.documentElement.setAttribute('data-theme', newMode ? 'dark' : 'light'); 
+    localStorage.setItem('theme', newMode ? 'dark' : 'light');
+  };
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -235,7 +247,17 @@ const Navbar = () => {
         >
           Recipe App
         </Typography>
-        
+        <Box sx={{display:'flex', alignItems:'center'}} >
+          <IconButton color='inherit'
+          onClick={toggleDarkMode}
+          aria-label='toggle dark mode' >
+            {isDarkMode ? (
+              <Brightness7Icon/>
+            ):(
+              <Brightness4Icon/>
+            )}
+          </IconButton>
+        </Box>
         {!isMobile ? desktopItems : mobileMenu}
       </Toolbar>
     </AppBar>
@@ -243,3 +265,5 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+

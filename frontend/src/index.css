@@ -2,14 +2,18 @@
 
 
 
-[data-theme="dark"] {
-  background-color: #121212;
-  color: #ffffff;
-}
 
 [data-theme="light"] {
-  background-color: #ffffff;
-  color: #121212;
-}body {
-  transition: background-color 0.3s ease;
+  background-color: #ffffff !important;
+  color: #121212 !important;
+}
+
+
+[data-theme="dark"] {
+  background-color: #121212 !important;
+  color: #ffffff !important;
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
